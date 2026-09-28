@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conheça o Seu Signo</title>
+  <meta name="description" content="Descubra seu signo do zodíaco de um jeito moderno: nome, data, personalidade, elemento e voz." />
+  <meta name="theme-color" content="#070712" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #070712;
+      --bg-2: #0d0d1c;
+      --card: rgba(18, 18, 36, 0.72);
+      --line: rgba(212, 175, 55, 0.28);
+      --gold: #d4af37;
+      --gold-2: #f0d78c;
+      --lilac: #c4b5fd;
+      --text: #f6f3ea;
+      --muted: #b7b3c7;
+      --ok: #86efac;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: "Outfit", system-ui, sans-serif;
+      background: radial-gradient(1200px 700px at 50% -10%, #1a1540 0%, var(--bg) 55%);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    #stars {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    }
+
+    .wrap {
+      position: relative; z-index: 1;
+      width: min(920px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 28px 0 80px;
+    }
+
+    .brand {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; margin-bottom: 28px;
+    }
+    .logo {
+      font-family: "Cinzel", serif;
+      letter-spacing: .12em;
+      font-size: 13px;
+      color: var(--gold-2);
+      text-transform: uppercase;
+    }
+    .ghost {
+      background: transparent; color: var(--lilac);
+      border: 1px solid rgba(196,181,253,.3);
+      border-radius: 999px; padding: 8px 14px;
+      cursor: pointer; font: inherit; font-size: 13px;
+    }
+    .ghost:hover { border-color: var(--gold); color: var(--gold-2); }
+
+    .screen { display: none; animation: rise .55s ease; }
+    .screen.active { display: block; }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    h1, h2, .sign-name {
+      font-family: "Cinzel", serif;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .hero h1 {
+      font-size: clamp(34px, 8vw, 64px);
+      margin: 10px 0 10px;
+    }
+    .hero p.lead {
+      color: var(--muted);
+      font-size: 17px;
+      max-width: 520px;
+    }
+
+    .panel {
+      margin-top: 28px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 22px;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+    }
+
+    label {
+      display: block; font-size: 13px; color: var(--lilac);
+      margin: 0 0 8px; letter-spacing: .04em;
+    }
+    input, select {
+      width: 100%;
+      background: rgba(7,7,18,.7);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--text);
+      border-radius: 14px;
+      padding: 14px 16px;
+      font: inherit; font-size: 16px;
+      outline: none;
+      color-scheme: dark;
+    }
+    select option { color: #111; background: #fff; }
+    input:focus, select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(212,175,55,.12);
+    }
+    .row { display: grid; gap: 14px; }
+    @media (min-width: 640px) {
+      .row.two { grid-template-columns: 1fr 1fr; }
+    }
+
+    .btn {
+      width: 100%;
+      margin-top: 16px;
+      border: 0;
+      border-radius: 999px;
+      padding: 15px 18px;
+      font: inherit; font-weight: 600; font-size: 16px;
+      cursor: pointer;
+      color: #1a1406;
+      background: linear-gradient(135deg, #f3e0a0, var(--gold) 45%, #b8860b);
+      box-shadow: 0 0 0 1px rgba(255,255,255,.15), 0 10px 30px rgba(212,175,55,.28);
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(212,175,55,.4); }
+    .btn.secondary {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: none;
+    }
+    .actions {
+      display: grid; gap: 10px; margin-top: 16px;
+    }
+    @media (min-width: 640px) {
+      .actions { grid-template-columns: repeat(3, 1fr); }
+      .actions .btn { margin-top: 0; }
+    }
+
+    .loading {
+      text-align: center; padding: 80px 10px;
+    }
+    .loading h2 { color: var(--gold-2); }
+    .loading .meta { color: var(--lilac); }
+    .orbit {
+      width: 86px; height: 86px; margin: 0 auto 22px;
+      border: 2px solid rgba(212,175,55,.2);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .result-card {
+      text-align: center;
+      padding: 28px 18px 22px;
+    }
+    .symbol {
+      font-size: 72px;
+      line-height: 1;
+      filter: drop-shadow(0 0 18px rgba(212,175,55,.45));
+      animation: float 3.4s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+    .hello {
+      color: var(--lilac); margin-top: 8px; font-size: 15px;
+    }
+    .sign-name {
+      font-size: clamp(40px, 10vw, 72px);
+      margin: 6px 0 4px;
+      background: linear-gradient(180deg, #fff, var(--gold-2));
+      -webkit-background-clip: text; background-clip: text;
+      color: transparent;
+    }
+    .meta { color: var(--muted); margin-bottom: 16px; }
+
+    .chips {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 8px;
+      margin: 12px 0 18px;
+    }
+    .chip {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 13px;
+      color: var(--gold-2);
+    }
+
+    .phrases {
+      text-align: left;
+      display: grid; gap: 8px;
+      margin: 8px auto 0;
+      max-width: 560px;
+    }
+    .phrases li {
+      list-style: none;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 14px;
+      padding: 11px 13px;
+      color: #efeaf8;
+    }
+
+    .story {
+      margin-top: 18px;
+      border-radius: 22px;
+      padding: 22px 18px;
+      background:
+        radial-gradient(400px 180px at 50% 0%, rgba(212,175,55,.16), transparent 70%),
+        linear-gradient(180deg, rgba(20,16,40,.9), rgba(7,7,18,.95));
+      border: 1px solid var(--line);
+    }
+    .story small { color: var(--muted); letter-spacing: .16em; text-transform: uppercase; font-size: 11px; }
+
+    .wheel {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+    }
+    @media (min-width: 700px) {
+      .wheel { grid-template-columns: repeat(4, 1fr); }
+    }
+    .sign-btn {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.08);
+      color: var(--text);
+      border-radius: 16px;
+      padding: 14px 8px;
+      cursor: pointer;
+      font: inherit;
+    }
+    .sign-btn:hover, .sign-btn.active {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(212,175,55,.12);
+    }
+    .sign-btn b { display: block; font-family: "Cinzel", serif; margin-top: 4px; }
+
+    .compare-box {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      color: #efeaf8;
+    }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%);
+      background: #151528; border: 1px solid var(--line);
+      color: var(--ok); padding: 10px 14px; border-radius: 999px;
+      display: none; z-index: 5; font-size: 14px;
+    }
+
+    footer {
+      margin-top: 40px; text-align: center; color: #7d7890; font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="stars"></canvas>
+
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">Conheça o Seu Signo</div>
+      <button class="ghost" type="button" id="btnWheelMini">Ver os 12 signos</button>
+    </div>
+
+    <section id="home" class="screen active">
+      <div class="hero">
+        <h1>Descubra seu signo</h1>
+        <p class="lead">Escreva seu nome e sua data de nascimento. O céu responde com a sua energia, o seu elemento e uma voz pra contar o resultado.</p>
+      </div>
+
+      <form class="panel" id="formMain" onsubmit="revelarSigno(event); return false;">
+        <div>
+          <label for="nome">Seu nome</label>
+          <input id="nome" name="nome" maxlength="40" placeholder="Ex: Emmanus" autocomplete="given-name" />
+        </div>
+        <div style="margin-top:14px">
+          <label>Data de nascimento</label>
+          <div class="row" style="grid-template-columns: 1fr 1.4fr 1fr; gap:10px">
+            <select id="dia" required>
+              <option value="">Dia</option>
+            </select>
+            <select id="mes" required>
+              <option value="">Mês</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+            <select id="ano" required>
+              <option value="">Ano</option>
+            </select>
+          </div>
+        </div>
+        <p id="formError" style="display:none;color:#fca5a5;margin-top:12px;font-size:14px"></p>
+        <button class="btn" type="button" id="btnReveal" onclick="revelarSigno(event)">Revelar meu signo</button>
+      </form>
+    </section>
+
+    <section id="loading" class="screen">
+      <div class="loading">
+        <div class="orbit"></div>
+        <h2>Lendo as estrelas...</h2>
+        <p class="meta" style="margin-top:10px">Preparando a sua revelação</p>
+      </div>
+    </section>
+
+    <section id="result" class="screen">
+      <article class="panel result-card" id="resultCard">
+        <div class="symbol" id="symbol">♌</div>
+        <p class="hello" id="hello">Olá</p>
+        <h2 class="sign-name" id="signName">Leão</h2>
+        <p class="meta" id="signDates"></p>
+        <div class="chips" id="chips"></div>
+        <div class="story" id="story"></div>
+        <ul class="phrases" id="phrases"></ul>
+        <div class="actions">
+          <button class="btn" type="button" id="btnSpeak">Ouvir resultado</button>
+          <button class="btn secondary" type="button" id="btnShare">Compartilhar</button>
+          <button class="btn secondary" type="button" id="btnAgain">Outro signo</button>
+        </div>
+      </article>
+
+      <div class="panel" style="margin-top:16px">
+        <h2 style="font-size:22px">Comparar com um amigo</h2>
+        <p class="meta">Coloque o nome e a data de outra pessoa para ver a sintonia.</p>
+        <div style="margin-top:14px">
+          <label for="nome2">Nome do amigo</label>
+          <input id="nome2" maxlength="28" placeholder="Ex: Ana" />
+        </div>
+        <div style="margin-top:14px">
+          <label>Data de nascimento do amigo</label>
+          <div class="row" style="grid-template-columns: 1fr 1.4fr 1fr; gap:10px">
+            <select id="dia2"><option value="">Dia</option></select>
+            <select id="mes2">
+              <option value="">Mês</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+            <select id="ano2"><option value="">Ano</option></select>
+          </div>
+        </div>
+        <button class="btn secondary" type="button" id="btnCompare">Ver compatibilidade</button>
+        <div class="compare-box" id="compareBox" hidden></div>
+      </div>
+    </section>
+
+    <section id="wheel" class="screen">
+      <div class="hero">
+        <h1>Roda dos signos</h1>
+        <p class="lead">Toque em um signo para conhecer o elemento, o planeta e a energia.</p>
+      </div>
+      <div class="panel">
+        <div class="wheel" id="wheelGrid"></div>
+        <div class="compare-box" id="wheelInfo" style="margin-top:16px">Escolha um signo acima.</div>
+        <button class="btn secondary" type="button" id="btnBackHome">Voltar ao início</button>
+      </div>
+    </section>
+
+    <footer>Projeto em um único arquivo • perfeito para o GitHub Pages</footer>
+  </div>
+
+  <div class="toast" id="toast">Copiado!</div>
+
+  <script>
+    const SIGNS = [
+      { key: "capricornio", name: "Capricórnio", symbol: "♑", start: [12,22], end: [1,19], element: "Terra", quality: "Cardinal", planet: "Saturno", color: "Preto e marrom", energy: "disciplina e construção",
+        meaning: "você tem um jeito constante de subir degrau por degrau.",
+        relation: "o trabalho, o tempo e as metas de longo prazo",
+        phrases: ["Gosta de organizar o caminho antes de sair correndo.", "É confiável quando assume uma responsabilidade.", "Transforma esforço em resultado.", "Tem paciência para projetos grandes.", "Valoriza conquista de verdade, não só aparência."] },
+      { key: "aquario", name: "Aquário", symbol: "♒", start: [1,20], end: [2,18], element: "Ar", quality: "Fixo", planet: "Urano", color: "Azul elétrico", energy: "ideias novas e liberdade",
+        meaning: "você enxerga o futuro com originalidade.",
+        relation: "amizades, tecnologia e o que é diferente",
+        phrases: ["Pensa fora do comum e gosta de inovar.", "Defende o grupo e as causas da turma.", "Tem um humor inteligente.", "Precisa de espaço para ser quem é.", "Inspira os outros com ideias frescas."] },
+      { key: "peixes", name: "Peixes", symbol: "♓", start: [2,19], end: [3,20], element: "Água", quality: "Mutável", planet: "Netuno", color: "Lilás e verde-água", energy: "imaginação e empatia",
+        meaning: "você sente o mundo com uma sensibilidade especial.",
+        relation: "sonhos, arte e cuidado com as pessoas",
+        phrases: ["Percebe o clima da sala sem ninguém explicar.", "Tem imaginação forte.", "Ajuda quem precisa com gentileza.", "Gosta de músicas e histórias.", "Encontra beleza em detalhes pequenos."] },
+      { key: "aries", name: "Áries", symbol: "♈", start: [3,21], end: [4,20], element: "Fogo", quality: "Cardinal", planet: "Marte", color: "Vermelho", energy: "coragem para começar",
+        meaning: "você nasce pronto para dar o primeiro passo.",
+        relation: "desafios, movimento e liderança natural",
+        phrases: ["Tem coragem de começar o que os outros só pensam.", "Leva energia para o grupo.", "Aprende fazendo.", "Gosta de metas claras.", "Quando acredita, vai até o fim."] },
+      { key: "touro", name: "Touro", symbol: "♉", start: [4,21], end: [5,20], element: "Terra", quality: "Fixo", planet: "Vênus", color: "Verde e dourado", energy: "estabilidade e prazer simples",
+        meaning: "você valoriza o que é sólido e bem feito.",
+        relation: "conforto, natureza e constância",
+        phrases: ["Tem gosto para coisas bonitas e duráveis.", "É paciente quando acredita no caminho.", "Protege quem gosta.", "Prefere qualidade a pressa.", "Traz calma para os amigos."] },
+      { key: "gemeos", name: "Gêmeos", symbol: "♊", start: [5,21], end: [6,20], element: "Ar", quality: "Mutável", planet: "Mercúrio", color: "Amarelo", energy: "curiosidade e conversa",
+        meaning: "você aprende rápido e conecta ideias.",
+        relation: "comunicação, estudo e variedade",
+        phrases: ["Faz perguntas boas e conta histórias bem.", "Se adapta a turmas diferentes.", "Tem mente ágil.", "Gosta de descobrir assunto novo.", "Transforma informação em papo interessante."] },
+      { key: "cancer", name: "Câncer", symbol: "♋", start: [6,21], end: [7,22], element: "Água", quality: "Cardinal", planet: "Lua", color: "Prata e branco", energy: "cuidado e memória afetiva",
+        meaning: "você guarda as pessoas com o coração.",
+        relation: "família, casa e proteção",
+        phrases: ["Lembra datas e detalhes importantes.", "Cria um ambiente acolhedor.", "É leal com quem confia.", "Sente com profundidade.", "Cuida do grupo de um jeito silencioso e forte."] },
+      { key: "leao", name: "Leão", symbol: "♌", start: [7,23], end: [8,22], element: "Fogo", quality: "Fixo", planet: "Sol", color: "Dourado", energy: "brilho e criatividade",
+        meaning: "você aquece o ambiente só de chegar.",
+        relation: "expressão, coragem e generosidade",
+        phrases: ["Tem presença e um jeito marcante.", "Gosta de criar e apresentar ideias.", "Anima a equipe.", "É generoso com elogios sinceros.", "Brilha mais quando pode ser autêntico."] },
+      { key: "virgem", name: "Virgem", symbol: "♍", start: [8,23], end: [9,22], element: "Terra", quality: "Mutável", planet: "Mercúrio", color: "Bege e verde-oliva", energy: "organização e melhoria",
+        meaning: "você percebe o detalhe que deixa tudo melhor.",
+        relation: "método, cuidado e precisão",
+        phrases: ["Repara no que ninguém viu.", "Gosta de deixar as coisas no lugar.", "Ajuda com soluções práticas.", "É observador e inteligente.", "Transforma bagunça em clareza."] },
+      { key: "libra", name: "Libra", symbol: "♎", start: [9,23], end: [10,22], element: "Ar", quality: "Cardinal", planet: "Vênus", color: "Rosa e azul-claro", energy: "harmonia e equilíbrio",
+        meaning: "você busca justiça e beleza nas relações.",
+        relation: "parcerias, arte e diplomacia",
+        phrases: ["Sabe ouvir os dois lados.", "Tem bom gosto.", "Busca paz sem ser omisso.", "Une pessoas diferentes.", "Deixa o ambiente mais elegante e justo."] },
+      { key: "escorpiao", name: "Escorpião", symbol: "♏", start: [10,23], end: [11,21], element: "Água", quality: "Fixo", planet: "Plutão", color: "Vinho e preto", energy: "intensidade e verdade",
+        meaning: "você sente fundo e não se contenta com a superfície.",
+        relation: "mistério, coragem emocional e transformação",
+        phrases: ["É leal de um jeito raro.", "Enxerga o que está por trás das palavras.", "Tem força para recomeçar.", "Protege os seus com seriedade.", "Transforma fases difíceis em aprendizado."] },
+      { key: "sagitario", name: "Sagitário", symbol: "♐", start: [11,22], end: [12,21], element: "Fogo", quality: "Mutável", planet: "Júpiter", color: "Roxo e azul", energy: "aventura e otimismo",
+        meaning: "você nasce com vontade de expandir o mapa.",
+        relation: "viagens, estudo e liberdade",
+        phrases: ["Vê possibilidade onde outros veem limite.", "Gosta de aprender coisas grandes.", "Contagia com humor e esperança.", "Precisa de horizonte.", "Inspira a turma a tentar o novo."] }
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const screens = {
+      home: $("home"),
+      loading: $("loading"),
+      result: $("result"),
+      wheel: $("wheel")
+    };
+
+    let current = null;
+    let personName = "";
+    let speaking = false;
+
+    function show(name) {
+      Object.values(screens).forEach((s) => s.classList.remove("active"));
+      screens[name].classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function inRange(month, day, start, end) {
+      const value = month * 100 + day;
+      const a = start[0] * 100 + start[1];
+      const b = end[0] * 100 + end[1];
+      if (a <= b) return value >= a && value <= b;
+      return value >= a || value <= b;
+    }
+
+    function signFromParts(month, day) {
+      return SIGNS.find((s) => inRange(Number(month), Number(day), s.start, s.end)) || SIGNS[0];
+    }
+
+    function formatRange(sign) {
+      const f = (arr) => `${String(arr[1]).padStart(2,"0")}/${String(arr[0]).padStart(2,"0")}`;
+      return `${f(sign.start)} a ${f(sign.end)}`;
+    }
+
+    function capitalize(name) {
+      return String(name || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .split(" ")
+        .map(function (word) {
+          if (!word) return "";
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+    }
+
+    function fillYears(selectId) {
+      var sel = $(selectId);
+      var year = 2026;
+      for (var y = year; y >= 1950; y--) {
+        var opt = document.createElement("option");
+        opt.value = String(y);
+        opt.textContent = String(y);
+        sel.appendChild(opt);
+      }
+    }
+
+    function fillDays(selectId) {
+      var sel = $(selectId);
+      for (var d = 1; d <= 31; d++) {
+        var opt = document.createElement("option");
+        opt.value = String(d);
+        opt.textContent = String(d);
+        sel.appendChild(opt);
+      }
+    }
+
+    function showError(msg) {
+      var el = $("formError");
+      if (!el) return toast(msg);
+      el.style.display = "block";
+      el.textContent = msg;
+    }
+
+    function clearError() {
+      var el = $("formError");
+      if (!el) return;
+      el.style.display = "none";
+      el.textContent = "";
+    }
+
+    function buildSpeech(name, sign) {
+      return `${name}, o seu signo é ${sign.name}. Isso significa que ${sign.meaning} O seu signo tem relação com ${sign.relation}. Ele pertence ao elemento ${sign.element}, é regido por ${sign.planet} e a energia do momento é ${sign.energy}. Sua cor da sorte é ${sign.color}. ${sign.phrases[0]} ${sign.phrases[1]}`;
+    }
+
+    function renderResult(name, sign) {
+      current = { name, sign };
+      $("symbol").textContent = sign.symbol;
+      $("hello").textContent = `${name}, o seu signo é`;
+      $("signName").textContent = sign.name;
+      $("signDates").textContent = formatRange(sign);
+      $("chips").innerHTML = `
+        <span class="chip">Elemento ${sign.element}</span>
+        <span class="chip">${sign.quality}</span>
+        <span class="chip">Planeta ${sign.planet}</span>
+        <span class="chip">Cor ${sign.color}</span>
+      `;
+      $("story").innerHTML = `
+        <small>Revelação</small>
+        <p style="margin-top:10px;font-size:18px;line-height:1.55">
+          <strong>${name}</strong>, o seu signo é <strong>${sign.name}</strong>.
+          Isso significa que ${sign.meaning}
+          O seu signo tem relação com ${sign.relation}.
+          A energia do momento é <strong>${sign.energy}</strong>.
+        </p>
+      `;
+      $("phrases").innerHTML = sign.phrases.map((p) => `<li>${p}</li>`).join("");
+      $("compareBox").hidden = true;
+    }
+
+    function speakText(text) {
+      if (!("speechSynthesis" in window)) {
+        toast("Seu navegador não tem voz, mas o texto está na tela.");
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = "pt-BR";
+      utter.rate = 1;
+      utter.pitch = 1;
+      const voices = window.speechSynthesis.getVoices();
+      const pt = voices.find((v) => v.lang.toLowerCase().startsWith("pt-br"))
+        || voices.find((v) => v.lang.toLowerCase().startsWith("pt"));
+      if (pt) utter.voice = pt;
+      speaking = true;
+      $("btnSpeak").textContent = "Parar voz";
+      utter.onend = () => {
+        speaking = false;
+        $("btnSpeak").textContent = "Ouvir de novo";
+      };
+      window.speechSynthesis.speak(utter);
+    }
+
+    function stopSpeak() {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      speaking = false;
+      $("btnSpeak").textContent = "Ouvir resultado";
+    }
+
+    function toast(msg) {
+      const el = $("toast");
+      el.textContent = msg;
+      el.style.display = "block";
+      setTimeout(() => { el.style.display = "none"; }, 2200);
+    }
+
+    function elementScore(a, b) {
+      if (a === b) return { title: "Sintonia alta", text: "Os dois falam a mesma língua do elemento. Fica fácil se entender." };
+      const pair = [a, b].sort().join("|");
+      const good = ["Ar|Fogo", "Água|Terra"];
+      if (good.includes(pair)) return { title: "Boa combinação", text: "As energias se completam e a amizade ganha equilíbrio." };
+      return { title: "Diferentes e interessantes", text: "Não é igual, e isso pode ensinar bastante se houver respeito." };
+    }
+
+    function revelarSigno(e) {
+      if (e) e.preventDefault();
+      try {
+        clearError();
+        personName = capitalize($("nome").value);
+        var dia = $("dia").value;
+        var mes = $("mes").value;
+        var ano = $("ano").value;
+        if (!personName) {
+          showError("Escreva o seu nome.");
+          return;
+        }
+        if (!dia || !mes || !ano) {
+          showError("Escolha o dia, o mês e o ano de nascimento.");
+          return;
+        }
+        var sign = signFromParts(mes, dia);
+        show("loading");
+        stopSpeak();
+        setTimeout(function () {
+          renderResult(personName, sign);
+          show("result");
+          speakText(buildSpeech(personName, sign));
+        }, 900);
+      } catch (err) {
+        showError("Não deu para revelar agora. Tente de novo.");
+      }
+    }
+
+    window.revelarSigno = revelarSigno;
+    $("formMain").addEventListener("submit", revelarSigno);
+    $("btnReveal").addEventListener("click", revelarSigno);
+
+    $("btnSpeak").addEventListener("click", () => {
+      if (!current) return;
+      if (speaking) stopSpeak();
+      else speakText(buildSpeech(current.name, current.sign));
+    });
+
+    $("btnAgain").addEventListener("click", () => {
+      stopSpeak();
+      show("home");
+    });
+
+    $("btnShare").addEventListener("click", async () => {
+      if (!current) return;
+      const text = buildSpeech(current.name, current.sign) + " — Conheça o Seu Signo";
+      if (navigator.share) {
+        try { await navigator.share({ title: "Conheça o Seu Signo", text }); return; }
+        catch (_) {}
+      }
+      await navigator.clipboard.writeText(text);
+      toast("Resultado copiado para colar onde quiser");
+    });
+
+    $("btnCompare").addEventListener("click", () => {
+      if (!current) return;
+      const n2 = capitalize($("nome2").value || "Amigo");
+      const d2 = $("dia2").value;
+      const m2 = $("mes2").value;
+      const a2 = $("ano2").value;
+      if (!d2 || !m2 || !a2) { toast("Escolha a data completa do amigo"); return; }
+      const s2 = signFromParts(m2, d2);
+      const fit = elementScore(current.sign.element, s2.element);
+      $("compareBox").hidden = false;
+      $("compareBox").innerHTML = `
+        <strong>${current.name}</strong> é ${current.sign.name} (${current.sign.element})<br>
+        <strong>${n2}</strong> é ${s2.name} (${s2.element})<br><br>
+        <strong>${fit.title}.</strong> ${fit.text}
+      `;
+    });
+
+    function drawWheel() {
+      $("wheelGrid").innerHTML = SIGNS.map((s) => `
+        <button class="sign-btn" type="button" data-key="${s.key}">
+          <span style="font-size:28px">${s.symbol}</span>
+          <b>${s.name}</b>
+        </button>
+      `).join("");
+    }
+
+    $("wheelGrid").addEventListener("click", (e) => {
+      const btn = e.target.closest(".sign-btn");
+      if (!btn) return;
+      document.querySelectorAll(".sign-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const sign = SIGNS.find((s) => s.key === btn.dataset.key);
+      $("wheelInfo").innerHTML = `
+        <div style="font-size:28px">${sign.symbol}</div>
+        <h2 style="margin:6px 0">${sign.name}</h2>
+        <p>${formatRange(sign)} • ${sign.element} • ${sign.planet}</p>
+        <p style="margin-top:8px">Isso significa que ${sign.meaning} Tem relação com ${sign.relation}. Energia: ${sign.energy}.</p>
+      `;
+    });
+
+    $("btnWheelMini").addEventListener("click", () => { stopSpeak(); show("wheel"); });
+    $("btnBackHome").addEventListener("click", () => show("home"));
+
+    fillDays("dia");
+    fillDays("dia2");
+    fillYears("ano");
+    fillYears("ano2");
+    drawWheel();
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    try {
+      const canvas = $("stars");
+      const ctx = canvas.getContext("2d");
+      let stars = [];
+      function resize() {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+        stars = Array.from({ length: 90 }, () => ({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.6 + 0.3,
+          a: Math.random(),
+          s: Math.random() * 0.008 + 0.002
+        }));
+      }
+      function tick() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach((st) => {
+          st.a += st.s;
+          const alpha = 0.25 + Math.abs(Math.sin(st.a)) * 0.7;
+          ctx.fillStyle = `rgba(240,215,140,${alpha})`;
+          ctx.beginPath();
+          ctx.arc(st.x, st.y, st.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        requestAnimationFrame(tick);
+      }
+      addEventListener("resize", resize);
+      resize();
+      tick();
+    } catch (err) {}
+  </script>
+</body>
+</html>
