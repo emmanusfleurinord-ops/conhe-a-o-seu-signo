@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conheça o Seu Signo</title>
+  <meta name="description" content="Descubra seu signo do zodíaco de um jeito moderno: nome, data, personalidade, elemento e voz." />
+  <meta name="theme-color" content="#070712" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <canvas id="stars"></canvas>
+
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo">Conheça o Seu Signo</div>
+      <button class="ghost" type="button" id="btnWheelMini">Ver os 12 signos</button>
+    </div>
+
+    <section id="home" class="screen active">
+      <div class="hero">
+        <h1>Descubra seu signo</h1>
+        <p class="lead">Escreva seu nome e sua data de nascimento para revelar o seu signo.</p>
+      </div>
+
+      <form class="panel" id="formMain" onsubmit="revelarSigno(event); return false;">
+        <div>
+          <label for="nome">Seu nome</label>
+          <input id="nome" name="nome" maxlength="40" placeholder="Ex: Emmanus" autocomplete="given-name" />
+        </div>
+        <div style="margin-top:14px">
+          <label>Data de nascimento</label>
+          <div class="row" style="grid-template-columns: 1fr 1.4fr 1fr; gap:10px">
+            <select id="dia" required>
+              <option value="">Dia</option>
+            </select>
+            <select id="mes" required>
+              <option value="">Mês</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+            <select id="ano" required>
+              <option value="">Ano</option>
+            </select>
+          </div>
+        </div>
+        <p id="formError" style="display:none;color:#fca5a5;margin-top:12px;font-size:14px"></p>
+        <button class="btn" type="button" id="btnReveal" onclick="revelarSigno(event)">Revelar meu signo</button>
+      </form>
+    </section>
+
+    <section id="loading" class="screen">
+      <div class="loading">
+        <div class="orbit"></div>
+        <h2>Lendo as estrelas...</h2>
+        <p class="meta" style="margin-top:10px">Preparando a sua revelação</p>
+      </div>
+    </section>
+
+    <section id="result" class="screen">
+      <article class="panel result-card" id="resultCard">
+        <div class="symbol" id="symbol">♌</div>
+        <p class="hello" id="hello">Olá</p>
+        <h2 class="sign-name" id="signName">Leão</h2>
+        <p class="meta" id="signDates"></p>
+        <div class="chips" id="chips"></div>
+        <div class="story" id="story"></div>
+        <ul class="phrases" id="phrases"></ul>
+        <p class="meta" id="saveStatus">Ainda não gravou no banco.</p>
+        <div class="compare-box" id="savedList">Nenhuma consulta carregada.</div>
+        <div class="actions">
+          <button class="btn" type="button" id="btnSpeak">Ouvir resultado</button>
+          <select id="voicePick" style="margin-top:10px"></select>
+          <button class="btn secondary" type="button" id="btnShare">Compartilhar</button>
+          <button class="btn secondary" type="button" id="btnAgain">Outro signo</button>
+        </div>
+      </article>
+
+      <div class="panel" style="margin-top:16px;text-align:center" id="compatChoice">
+        <h2 style="font-size:22px">Quer comparar com outra pessoa?</h2>
+        <p class="meta">Isso é opcional. Primeiro você já descobriu o seu signo.</p>
+        <button class="btn" type="button" id="btnWantCompat">Sim, comparar o meu signo</button>
+      </div>
+
+      <div class="panel" style="margin-top:16px;display:none" id="compatPanel">
+        <h2 style="font-size:22px">Comparar com outra pessoa</h2>
+        <p class="meta">Agora coloque o nome e a data de quem você quer comparar.</p>
+        <div style="margin-top:14px">
+          <label for="nome2">Nome do amigo</label>
+          <input id="nome2" maxlength="28" placeholder="Ex: Ana" />
+        </div>
+        <div style="margin-top:14px">
+          <label>Data de nascimento do amigo</label>
+          <div class="row" style="grid-template-columns: 1fr 1.4fr 1fr; gap:10px">
+            <select id="dia2"><option value="">Dia</option></select>
+            <select id="mes2">
+              <option value="">Mês</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+            <select id="ano2"><option value="">Ano</option></select>
+          </div>
+        </div>
+        <button class="btn" type="button" id="btnCompare">Ver compatibilidade</button>
+        <button class="btn secondary" type="button" id="btnCancelCompat">Agora não</button>
+        <div class="compare-box" id="compareBox" hidden></div>
+      </div>
+    </section>
+
+    <section id="compat" class="screen">
+      <div class="hero">
+        <h1>Descobrir compatibilidade</h1>
+        <p class="lead">Coloque o nome e a data de duas pessoas para ver a sintonia de amizade e de energia.</p>
+      </div>
+      <form class="panel" id="formCompat">
+        <h2 style="font-size:20px;margin-bottom:12px">Pessoa 1</h2>
+        <label for="cNome1">Nome</label>
+        <input id="cNome1" maxlength="40" placeholder="Ex: Emmanus" />
+        <div style="margin-top:14px">
+          <label>Data de nascimento</label>
+          <div class="row" style="grid-template-columns: 1fr 1.4fr 1fr; gap:10px">
+            <select id="cDia1"><option value="">Dia</option></select>
+            <select id="cMes1">
+              <option value="">Mês</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+            <select id="cAno1"><option value="">Ano</option></select>
+          </div>
+        </div>
+
+        <h2 style="font-size:20px;margin:22px 0 12px">Pessoa 2</h2>
+        <label for="cNome2">Nome</label>
+        <input id="cNome2" maxlength="40" placeholder="Ex: Ana" />
+        <div style="margin-top:14px">
+          <label>Data de nascimento</label>
+          <div class="row" style="grid-template-columns: 1fr 1.4fr 1fr; gap:10px">
+            <select id="cDia2"><option value="">Dia</option></select>
+            <select id="cMes2">
+              <option value="">Mês</option>
+              <option value="1">Janeiro</option>
+              <option value="2">Fevereiro</option>
+              <option value="3">Março</option>
+              <option value="4">Abril</option>
+              <option value="5">Maio</option>
+              <option value="6">Junho</option>
+              <option value="7">Julho</option>
+              <option value="8">Agosto</option>
+              <option value="9">Setembro</option>
+              <option value="10">Outubro</option>
+              <option value="11">Novembro</option>
+              <option value="12">Dezembro</option>
+            </select>
+            <select id="cAno2"><option value="">Ano</option></select>
+          </div>
+        </div>
+        <p id="compatError" style="display:none;color:#fca5a5;margin-top:12px;font-size:14px"></p>
+        <button class="btn" type="button" id="btnCompatGo">Ver sintonia</button>
+        <button class="btn secondary" type="button" id="btnCompatBack">Voltar ao início</button>
+      </form>
+
+      <article class="panel result-card" id="compatResult" hidden style="margin-top:16px">
+        <div class="score" id="compatScore">80%</div>
+        <p class="hello" id="compatTitle">Sintonia</p>
+        <div class="duo">
+          <div>
+            <span id="compatSym1">♈</span>
+            <b id="compatSign1">Áries</b>
+            <small id="compatName1">Pessoa 1</small>
+          </div>
+          <div>
+            <span id="compatSym2">♌</span>
+            <b id="compatSign2">Leão</b>
+            <small id="compatName2">Pessoa 2</small>
+          </div>
+        </div>
+        <div class="story" id="compatStory"></div>
+        <div class="actions" style="grid-template-columns:1fr 1fr">
+          <button class="btn" type="button" id="btnCompatSpeak">Ouvir resultado</button>
+          <button class="btn secondary" type="button" id="btnCompatShare">Compartilhar</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="wheel" class="screen">
+      <div class="hero">
+        <h1>Roda dos signos</h1>
+        <p class="lead">Toque em um signo para conhecer o elemento, o planeta e a energia.</p>
+      </div>
+      <div class="panel">
+        <div class="wheel" id="wheelGrid"></div>
+        <div class="compare-box" id="wheelInfo" style="margin-top:16px">Escolha um signo acima.</div>
+        <button class="btn secondary" type="button" id="btnBackHome">Voltar ao início</button>
+      </div>
+    </section>
+
+    <footer>Conheça o Seu Signo</footer>
+  </div>
+
+  <div class="toast" id="toast">Copiado!</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
